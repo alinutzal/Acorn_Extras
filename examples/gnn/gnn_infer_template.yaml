@@ -1,0 +1,44 @@
+# acorn configuration
+stage: edge_classifier
+model: InteractionGNN2
+dataset_class: GraphDataset
+input_dir: /global/cfs/cdirs/m3443/data/GNN4ITK/2024_uncorr_ttbar_v9/module_map_{{DATASET}}_graphs
+stage_dir: /pscratch/sd/a/alazar/cf/Rel_2024_v9/
+project: ATLAS-P2-RUN4-03-00-00_Rel.24 # Used in logging
+devices: [0]
+accelerator: cuda
+nodes: 1
+checkpoint: '/global/cfs/cdirs/m4439/acorn_model_store/rel_24_v9/gnn/MM_{{DATASET}}_ignn2.ckpt'
+# Dataset parameters
+data_split: [0, 1000, 0] # Number of [training, validation, testing] examples
+variable_with_prefix: True
+concat: False
+in_out_diff_agg: True
+hidden: 128
+
+node_features: [hit_r, hit_phi, hit_z, hit_eta, hit_cluster_r_1, hit_cluster_phi_1, hit_cluster_z_1, hit_cluster_eta_1, hit_cluster_r_2, hit_cluster_phi_2, hit_cluster_z_2, hit_cluster_eta_2]
+node_scales: [1000., 3.14159265359, 1000., 1., 1000., 3.14159265359, 1000., 1., 1000., 3.14159265359, 1000., 1.]
+edge_features: [edge_dr, edge_dphi, edge_dz, edge_deta, edge_phislope, edge_rphislope]
+
+n_graph_iters: 8
+n_node_encoder_layers: 3
+n_edge_encoder_layers: 3
+n_node_net_layers: 3
+n_edge_net_layers: 3
+n_node_decoder_layers: 3
+n_edge_decoder_layers: 3
+layernorm: True
+output_layer_norm: False
+edge_output_transform_final_layer_norm: False
+batchnorm: False
+output_batch_norm: False
+edge_output_transform_final_batch_norm: False
+bn_track_running_stats: False
+hidden_activation: ReLU
+output_activation: ReLU
+edge_output_transform_final_activation: null
+concat: False
+node_net_recurrent: False
+edge_net_recurrent: False
+in_out_diff_agg: True
+checkpointing: True

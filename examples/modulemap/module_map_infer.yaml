@@ -1,0 +1,25 @@
+# CommonFramework configuration
+stage: graph_construction
+model: PyModuleMap
+
+input_dir: /global/cfs/cdirs/m3443/data/GNN4ITK/2024_uncorr_ttbar_v9/data_reading/
+#input_dir: /global/cfs/cdirs/m3443/data/GNN4ITK/CHEP2024_data_diff_var/feature_store # Jay 
+stage_dir: /global/cfs/cdirs/m4439/mmg/output/
+
+# Dataset parameters
+#data_split: [0, 1000, 926] # Number of [training, validation, testing] examples
+data_split: [0, 100, 0] # Number of [training, validation, testing] examples
+module_map:
+  path: /global/cfs/cdirs/m4439/mmg/ModuleMaps/ModuleMap_rel24_ttbar_v9_89809evts_cleaned_mean_rms_computed.triplets.root
+  #path: /global/cfs/cdirs/m4439/acorn_model_store/REL_2024/module_map/modules_ATLAS-P2-RUN4-03-00-00.txt
+  method: meanrms
+  tolerance: 10^-10
+  rms_threshold_factor: 0.5
+batch_size: 20000
+
+accelerator: cuda
+devices: 1
+nodes: 1
+
+max_workers: 16
+event_prefix: ttbar_uncorr_pu200_v9

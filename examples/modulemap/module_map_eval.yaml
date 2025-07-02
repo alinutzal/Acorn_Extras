@@ -1,0 +1,50 @@
+# CommonFramework configuration
+stage: graph_construction
+model: PyModuleMap
+input_dir: /global/cfs/cdirs/m3443/data/GNN4ITK/2024_uncorr_ttbar_v9/data_reading/
+#input_dir: /global/cfs/cdirs/m3443/data/GNN4ITK/CHEP2024_data_diff_var/feature_store # Jay 
+#stage_dir: /pscratch/sd/a/alazar/cf/CTD_2023/ATLAS-P2-RUN4-03-00-00_Rel.24/ttbar_uncorr/pu200/v5/module_map
+#stage_dir: /global/cfs/cdirs/m3443/data/GNN4ITK/CHEP2024_data/graphs_from_MM
+stage_dir: /global/cfs/cdirs/m4439/mmg/output
+
+# Dataset parameters
+data_split: [0, 1, 0] # Number of [training, validation, testing] examples
+
+module_map:
+  path: /global/cfs/cdirs/m2616/MMG/ModuleMap_closest_all_dr_rel24_89809evts_double.tol1e-10.triplets.root
+  #path: /global/cfs/cdirs/m4439/acorn_model_store/REL_2024/module_map/modules_ATLAS-P2-RUN4-03-00-00.txt
+  method: minmax
+  tolerance: 10^-10
+batch_size: 20000
+score_cut: 0.5
+
+# Evaluation parameters
+target_tracks: 
+  pt: [1000, .inf]
+  nhits: [3, .inf]
+  primary: True
+  pdgId: [not_in, [11, -11]]
+  radius: [0., 260.]
+  #eta_particle: [-4., 4.]
+  #redundant_split_edges: False
+  
+# Plotting parameters
+plots:
+  graph_construction_efficiency: 
+    title: Module Map Edge-wise Efficiency
+    pt_units: MeV
+    ylim: [0.90, 1.04]
+
+  #gnn_efficiency_rz: 
+  #  title: Filter efficiency
+  #  z_range: [-3.1, 3.1]
+  #  vmax: 1
+  #  vmin: 0.9
+  #  filename: "mm_edgewise_efficiency_vs_rz"
+    
+
+  #gnn_purity_rz: 
+  #  title: Filter purity
+  #  vmin: 0.
+  #  vmax: 0.03
+  #  filename: "mm_edgewise_purity_vs_rz"

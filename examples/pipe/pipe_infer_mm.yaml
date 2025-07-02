@@ -1,0 +1,58 @@
+# Acorn configuration: pipe_infer.yaml
+stage: pipe_line
+model: PipeLine
+debug: True
+time: True
+#input_dir: /global/cfs/cdirs/m4439/REL2024/feature_store/
+input_dir: /global/cfs/cdirs/m3443/data/GNN4ITK/2024_uncorr_ttbar_v9/module_map_meanrms_graphs
+stage_dir: /pscratch/sd/a/alazar/cf/Rel_2024_v9/
+accelerator: gpu
+output_file: pipe_infer_mm_v9_40g.csv
+
+infer_stages:
+  # - stage_type: graph_construction
+  #   model: PyModuleMap
+  #   config: /global/homes/a/alazar/acorn_yaml/examples/Rel_24/module_map_infer.yaml
+  - stage_type: edge_classifier
+    model: InteractionGNN2
+    config: /global/homes/a/alazar/acorn_yaml/examples/v9/gnn/gnn_infer.yaml
+    #checkpoint: /global/cfs/cdirs/m4439/acorn_model_store/REL_2024/gnn/best_latent128_LN--val_loss=0.000409-epoch=77.ckpt
+    #checkpoint: /global/cfs/cdirs/m4439/acorn_model_store/REL_2024/gnn/best--val-24_hidden.ckpt #24.ckpt
+    checkpoint: '/global/cfs/cdirs/m4439/acorn_model_store/rel_24_v9/gnn/MM_meanrms_trained_IGNN2_L2IT_scaillou_best--val_loss=0.003805-epoch=397.ckpt'
+  # - stage_type: track_building
+  #   model: CCandWalk #ConnectedComponents
+  #   #config: /global/homes/a/alazar/acorn_yaml/examples/Rel_24/track_building_infer_mm.yaml
+  #   config: /global/homes/a/alazar/acorn_yaml/examples/Rel_24/track_building_walkthrough_speedup_infer.yaml
+eval_stages:
+  - stage_type: track_building
+    model: ConnectedComponents
+    config: /global/homes/a/alazar/acorn_yaml/examples/Rel_24/track_building_eval.yaml
+
+# Dataset parameters
+data_split: [0, 1000, 0] # Number of [training, validation, testing] examples
+#hard_cuts:
+#  pt: [1000, .inf]
+warmup_runs: 10
+amp_autocast: False
+torch_compile: False
+
+wandb: False
+project: ATLAS-P2-RUN4-03-00-00_Rel.24
+
+node_features: [hit_r, hit_phi, hit_z, hit_eta, hit_cluster_r_1, hit_cluster_phi_1, hit_cluster_z_1, hit_cluster_eta_1, hit_cluster_r_2, hit_cluster_phi_2, hit_cluster_z_2, hit_cluster_eta_2]
+node_scales: [1000., 3.14159265359, 1000., 1., 1000., 3.14159265359, 1000., 1., 1000., 3.14159265359, 1000., 1.]
+edge_features: [edge_dr, edge_dphi, edge_dz, edge_deta, edge_phislope, edge_rphislope]
+
+memory_tracker: False
+#memory_tracking_list: [interactionGNN2]
+memory_tracking_list: []
+profiler: False
+ddp_flops_tracker: False
+
+#event_prefix: ""
+event_prefix: ttbar_uncorr_pu200_v9_module_map_meanrms # needed to run interactionGNN2 without modulemap
+hidden: 128
+pruned: 0
+pruned_list: [] 
+variable_with_prefix: True
+#pruned_list: [edge_network, node_network]

@@ -1,0 +1,46 @@
+# Acorn configuration: pipe_infer_template.yaml
+stage: pipe_line
+model: PipeLine
+debug: True
+time: True
+#input_dir: /global/cfs/cdirs/m4439/REL2024/feature_store/
+input_dir: /global/cfs/cdirs/m3443/data/GNN4ITK/2024_uncorr_ttbar_v9/module_map_{{DATASET}}_graphs
+stage_dir: /pscratch/sd/a/alazar/cf/Rel_2024_v9/{{GPU}}_{{DATASET}}_{{OPTION}}/
+accelerator: gpu
+output_file: pipe_infer_{{GPU}}_{{DATASET}}_{{OPTION}}.csv
+
+infer_stages:
+  - stage_type: edge_classifier
+    model: InteractionGNN2
+    config: {{GNN_CONFIG}}
+    checkpoint: '/global/cfs/cdirs/m4439/acorn_model_store/rel_24_v9/gnn/MM_{{DATASET}}_ignn2.ckpt'
+
+eval_stages:
+  - stage_type: track_building
+    model: ConnectedComponents
+    config: /global/homes/a/alazar/acorn_yaml/examples/Rel_24/track_building_eval.yaml
+
+# Dataset parameters
+data_split: [0, 1000, 0] # Number of [training, validation, testing] examples
+warmup_runs: 10
+amp_autocast: {{AMP}}
+amp_dtype: float16
+torch_compile: {{TC}}
+
+wandb: False
+project: ATLAS-P2-RUN4-03-00-00_Rel.24
+
+node_features: [hit_r, hit_phi, hit_z, hit_eta, hit_cluster_r_1, hit_cluster_phi_1, hit_cluster_z_1, hit_cluster_eta_1, hit_cluster_r_2, hit_cluster_phi_2, hit_cluster_z_2, hit_cluster_eta_2]
+node_scales: [1000., 3.14159265359, 1000., 1., 1000., 3.14159265359, 1000., 1., 1000., 3.14159265359, 1000., 1.]
+edge_features: [edge_dr, edge_dphi, edge_dz, edge_deta, edge_phislope, edge_rphislope]
+
+memory_tracker: False
+memory_tracking_list: []
+profiler: False
+ddp_flops_tracker: False
+
+event_prefix: ttbar_uncorr_pu200_v9_module_map_{{DATASET}} # needed to run interactionGNN2 without modulemap
+hidden: 128
+pruned: 0
+pruned_list: [] 
+variable_with_prefix: True
